@@ -2,10 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <title>Year Progress Tracker</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Year</title>
     <style>
         * {
             margin: 0;
@@ -13,251 +11,241 @@
             box-sizing: border-box;
         }
 
+        :root {
+            --bg: #FFFFFF;
+            --text: #1A1A1A;
+            --text-secondary: #666666;
+            --accent: #4A5568;
+            --border: #E5E5E5;
+            --dot: #D4D4D4;
+            --dot-filled: #4A5568;
+        }
+
+        [data-theme="dark"] {
+            --bg: #1A1A1A;
+            --text: #E5E5E5;
+            --text-secondary: #999999;
+            --accent: #8E9AAF;
+            --border: #333333;
+            --dot: #404040;
+            --dot-filled: #8E9AAF;
+        }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(135deg, #ffeef8 0%, #e3f2fd 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Helvetica Neue', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            font-size: 14px;
+            line-height: 1.5;
+            font-weight: 400;
+            transition: background 200ms, color 200ms;
             min-height: 100vh;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            overflow-x: hidden;
+            padding: 60px 20px;
         }
 
         .container {
-            max-width: 100%;
-            width: 100%;
-            padding: 0 10px;
+            max-width: 480px;
+            margin: 0 auto;
+        }
+
+        header {
+            margin-bottom: 80px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         h1 {
-            text-align: center;
-            color: #4a5568;
-            font-size: 24px;
-            margin-bottom: 10px;
-            font-weight: 600;
+            font-size: 20px;
+            font-weight: 500;
+            color: var(--text);
         }
 
-        .year-display {
-            text-align: center;
-            color: #718096;
-            font-size: 18px;
-            margin-bottom: 20px;
+        .theme-toggle {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 14px;
+            cursor: pointer;
+            padding: 4px 8px;
+            opacity: 0.6;
+            transition: opacity 200ms;
         }
 
-        .days-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(45px, 1fr));
-            gap: 8px;
-            margin-bottom: 30px;
-            padding: 20px;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        .day-cell {
-            aspect-ratio: 1;
-            border: 2px solid #e2e8f0;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            background: white;
-            transition: all 0.3s ease;
-            overflow: hidden;
-        }
-
-        .day-cell.passed {
-            background: #cbd5e0;
-            border-color: #a0aec0;
-        }
-
-        .day-cell.today {
-            border-color: #667eea;
-            border-width: 3px;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
-        }
-
-        /* Hand-drawn blue flower */
-        .flower {
-            width: 28px;
-            height: 28px;
-            position: relative;
+        .theme-toggle:hover {
             opacity: 1;
-            transition: opacity 0.3s ease;
-        }
-
-        .day-cell.passed .flower {
-            opacity: 0.3;
-        }
-
-        /* Flower petals */
-        .petal {
-            position: absolute;
-            width: 10px;
-            height: 10px;
-            background: #60a5fa;
-            border-radius: 50% 50% 0 50%;
-            transform-origin: bottom right;
-        }
-
-        .petal:nth-child(1) {
-            top: 4px;
-            left: 9px;
-            transform: rotate(0deg);
-        }
-
-        .petal:nth-child(2) {
-            top: 7px;
-            left: 15px;
-            transform: rotate(72deg);
-        }
-
-        .petal:nth-child(3) {
-            top: 13px;
-            left: 14px;
-            transform: rotate(144deg);
-        }
-
-        .petal:nth-child(4) {
-            top: 13px;
-            left: 7px;
-            transform: rotate(216deg);
-        }
-
-        .petal:nth-child(5) {
-            top: 7px;
-            left: 3px;
-            transform: rotate(288deg);
-        }
-
-        /* Flower center */
-        .flower-center {
-            position: absolute;
-            width: 6px;
-            height: 6px;
-            background: #fbbf24;
-            border-radius: 50%;
-            top: 11px;
-            left: 11px;
-            box-shadow: 0 0 0 1px #f59e0b;
-        }
-
-        /* Flower stem (small dot at bottom) */
-        .stem {
-            position: absolute;
-            width: 2px;
-            height: 8px;
-            background: #34d399;
-            bottom: 2px;
-            left: 13px;
-            border-radius: 1px;
         }
 
         .stats {
-            text-align: center;
-            padding: 20px;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 60px;
         }
 
-        .days-remaining {
-            font-size: 48px;
-            font-weight: bold;
-            color: #667eea;
-            margin-bottom: 10px;
+        .stat-line {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
         }
 
-        .days-label {
-            font-size: 18px;
-            color: #718096;
-            margin-bottom: 20px;
+        .stat-label {
+            color: var(--text-secondary);
         }
 
-        .progress-bar-container {
+        .stat-value {
+            color: var(--text);
+        }
+
+        .year-grid {
+            margin-bottom: 80px;
+        }
+
+        .dots {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, 4px);
+            gap: 3px;
+            margin-bottom: 40px;
+        }
+
+        .dot {
+            width: 4px;
+            height: 4px;
+            background: var(--dot);
+            border-radius: 50%;
+        }
+
+        .dot.filled {
+            background: var(--dot-filled);
+        }
+
+        .dot.today {
+            background: var(--accent);
+            width: 5px;
+            height: 5px;
+        }
+
+        .entry-section {
+            margin-bottom: 80px;
+        }
+
+        .entry-input {
             width: 100%;
-            height: 20px;
-            background: #e2e8f0;
-            border-radius: 10px;
-            overflow: hidden;
-            margin-bottom: 10px;
-        }
-
-        .progress-bar {
-            height: 100%;
-            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-            border-radius: 10px;
-            transition: width 0.5s ease;
-        }
-
-        .progress-text {
+            background: none;
+            border: none;
+            border-bottom: 1px solid var(--border);
+            color: var(--text);
             font-size: 14px;
-            color: #a0aec0;
+            padding: 8px 0;
+            font-family: inherit;
+            transition: border-color 200ms;
+            margin-bottom: 40px;
         }
 
-        @media (max-width: 375px) {
-            .days-grid {
-                grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
-                gap: 6px;
-                padding: 15px;
-            }
-
-            .flower {
-                width: 24px;
-                height: 24px;
-            }
-
-            .petal {
-                width: 9px;
-                height: 9px;
-            }
-
-            h1 {
-                font-size: 20px;
-            }
-
-            .days-remaining {
-                font-size: 40px;
-            }
+        .entry-input:focus {
+            outline: none;
+            border-bottom-color: var(--accent);
         }
 
-        /* Add a subtle animation to today's cell */
-        @keyframes pulse {
-            0%, 100% {
-                transform: scale(1);
-            }
-            50% {
-                transform: scale(1.05);
-            }
+        .entry-input::placeholder {
+            color: var(--text-secondary);
+            opacity: 0.5;
         }
 
-        .day-cell.today {
-            animation: pulse 2s ease-in-out infinite;
+        .entries {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .entry {
+            display: flex;
+            gap: 16px;
+        }
+
+        .entry-date {
+            color: var(--text-secondary);
+            font-size: 14px;
+            min-width: 60px;
+            flex-shrink: 0;
+        }
+
+        .entry-text {
+            color: var(--text);
+            font-size: 14px;
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 40px 16px;
+            }
+
+            header {
+                margin-bottom: 60px;
+            }
+
+            .stats {
+                margin-bottom: 40px;
+            }
+
+            .year-grid {
+                margin-bottom: 60px;
+            }
+
+            .entry-section {
+                margin-bottom: 60px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🌸 Year Progress Tracker 🌸</h1>
-        <div class="year-display" id="yearDisplay"></div>
-
-        <div class="days-grid" id="daysGrid"></div>
+        <header>
+            <h1 id="yearTitle">2025</h1>
+            <button class="theme-toggle" id="themeToggle">Dark</button>
+        </header>
 
         <div class="stats">
-            <div class="days-remaining" id="daysRemaining"></div>
-            <div class="days-label">days remaining in <span id="currentYear"></span></div>
-
-            <div class="progress-bar-container">
-                <div class="progress-bar" id="progressBar"></div>
+            <div class="stat-line">
+                <span class="stat-label">Days elapsed</span>
+                <span class="stat-value" id="daysElapsed">0</span>
             </div>
-            <div class="progress-text" id="progressText"></div>
+            <div class="stat-line">
+                <span class="stat-label">Days remaining</span>
+                <span class="stat-value" id="daysRemaining">0</span>
+            </div>
+        </div>
+
+        <div class="year-grid">
+            <div class="dots" id="dotsContainer"></div>
+        </div>
+
+        <div class="entry-section">
+            <input
+                type="text"
+                class="entry-input"
+                id="entryInput"
+                placeholder="Today's entry"
+                maxlength="200"
+            >
+            <div class="entries" id="entriesList"></div>
         </div>
     </div>
 
     <script>
+        // Theme management
+        const themeToggle = document.getElementById('themeToggle');
+        const html = document.documentElement;
+        const currentTheme = localStorage.getItem('theme') || 'light';
+
+        html.setAttribute('data-theme', currentTheme);
+        themeToggle.textContent = currentTheme === 'light' ? 'Dark' : 'Light';
+
+        themeToggle.addEventListener('click', () => {
+            const newTheme = html.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            themeToggle.textContent = newTheme === 'light' ? 'Dark' : 'Light';
+        });
+
+        // Year calculations
         function isLeapYear(year) {
             return (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
         }
@@ -269,73 +257,132 @@
             return Math.floor(diff / oneDay);
         }
 
-        function initYearProgress() {
+        function formatDate(date) {
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            return `${months[date.getMonth()]} ${date.getDate()}`;
+        }
+
+        function renderYear() {
             const now = new Date();
             const currentYear = now.getFullYear();
             const totalDays = isLeapYear(currentYear) ? 366 : 365;
             const currentDay = getDayOfYear(now);
             const daysRemaining = totalDays - currentDay;
-            const progressPercent = ((currentDay / totalDays) * 100).toFixed(1);
 
-            // Update year display
-            document.getElementById('yearDisplay').textContent = currentYear;
-            document.getElementById('currentYear').textContent = currentYear;
-
-            // Update days remaining
+            // Update title and stats
+            document.getElementById('yearTitle').textContent = currentYear;
+            document.getElementById('daysElapsed').textContent = currentDay;
             document.getElementById('daysRemaining').textContent = daysRemaining;
 
-            // Update progress bar
-            document.getElementById('progressBar').style.width = progressPercent + '%';
-            document.getElementById('progressText').textContent = `${progressPercent}% of the year completed`;
-
-            // Generate day cells
-            const daysGrid = document.getElementById('daysGrid');
-            daysGrid.innerHTML = '';
+            // Render dots
+            const dotsContainer = document.getElementById('dotsContainer');
+            dotsContainer.innerHTML = '';
 
             for (let i = 1; i <= totalDays; i++) {
-                const dayCell = document.createElement('div');
-                dayCell.className = 'day-cell';
+                const dot = document.createElement('div');
+                dot.className = 'dot';
 
                 if (i < currentDay) {
-                    dayCell.classList.add('passed');
+                    dot.classList.add('filled');
                 } else if (i === currentDay) {
-                    dayCell.classList.add('today');
+                    dot.classList.add('today');
                 }
 
-                // Create flower
-                const flower = document.createElement('div');
-                flower.className = 'flower';
-
-                // Create 5 petals
-                for (let j = 0; j < 5; j++) {
-                    const petal = document.createElement('div');
-                    petal.className = 'petal';
-                    flower.appendChild(petal);
-                }
-
-                // Create flower center
-                const center = document.createElement('div');
-                center.className = 'flower-center';
-                flower.appendChild(center);
-
-                // Create stem
-                const stem = document.createElement('div');
-                stem.className = 'stem';
-                flower.appendChild(stem);
-
-                dayCell.appendChild(flower);
-                daysGrid.appendChild(dayCell);
+                dotsContainer.appendChild(dot);
             }
         }
 
-        // Initialize on page load
-        initYearProgress();
+        // Entry management
+        function loadEntries() {
+            const entries = JSON.parse(localStorage.getItem('entries') || '[]');
+            return entries.sort((a, b) => new Date(b.date) - new Date(a.date));
+        }
 
-        // Update at midnight (check every minute)
+        function saveEntry(text) {
+            const entries = loadEntries();
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            // Check if entry for today already exists
+            const existingIndex = entries.findIndex(e => {
+                const entryDate = new Date(e.date);
+                entryDate.setHours(0, 0, 0, 0);
+                return entryDate.getTime() === today.getTime();
+            });
+
+            if (existingIndex !== -1) {
+                entries[existingIndex].text = text;
+            } else {
+                entries.push({
+                    date: today.toISOString(),
+                    text: text
+                });
+            }
+
+            localStorage.setItem('entries', JSON.stringify(entries));
+            renderEntries();
+        }
+
+        function renderEntries() {
+            const entries = loadEntries();
+            const entriesList = document.getElementById('entriesList');
+
+            if (entries.length === 0) {
+                entriesList.innerHTML = '';
+                return;
+            }
+
+            entriesList.innerHTML = entries.map(entry => {
+                const date = new Date(entry.date);
+                return `
+                    <div class="entry">
+                        <div class="entry-date">${formatDate(date)}</div>
+                        <div class="entry-text">${entry.text}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Entry input handler
+        const entryInput = document.getElementById('entryInput');
+
+        // Load today's entry if it exists
+        const entries = loadEntries();
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const todayEntry = entries.find(e => {
+            const entryDate = new Date(e.date);
+            entryDate.setHours(0, 0, 0, 0);
+            return entryDate.getTime() === today.getTime();
+        });
+
+        if (todayEntry) {
+            entryInput.value = todayEntry.text;
+        }
+
+        entryInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && entryInput.value.trim()) {
+                saveEntry(entryInput.value.trim());
+                entryInput.blur();
+            }
+        });
+
+        entryInput.addEventListener('blur', () => {
+            if (entryInput.value.trim()) {
+                saveEntry(entryInput.value.trim());
+            }
+        });
+
+        // Initialize
+        renderYear();
+        renderEntries();
+
+        // Update at midnight
         setInterval(() => {
             const now = new Date();
             if (now.getHours() === 0 && now.getMinutes() === 0) {
-                initYearProgress();
+                renderYear();
+                entryInput.value = '';
             }
         }, 60000);
     </script>
