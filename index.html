@@ -30,39 +30,22 @@
             transform: translate(-50%, -50%);
             cursor: pointer;
             filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.15));
+            transition: transform 0.1s;
+        }
+
+        .dog-container:active {
+            transform: translate(-50%, -50%) scale(0.95);
         }
 
         /* Pixel Art Dog */
         .pixel-dog {
-            width: 160px;
-            height: 160px;
+            width: 180px;
+            height: 180px;
             image-rendering: pixelated;
             image-rendering: -moz-crisp-edges;
             image-rendering: crisp-edges;
             position: relative;
         }
-
-        /* Dog sprite using CSS grid for pixel art */
-        .dog-sprite {
-            display: grid;
-            grid-template-columns: repeat(32, 5px);
-            grid-template-rows: repeat(32, 5px);
-            gap: 0;
-        }
-
-        .pixel {
-            width: 5px;
-            height: 5px;
-        }
-
-        /* Colors */
-        .brown { background: #8B5A3C; }
-        .dark-brown { background: #5C3A29; }
-        .white { background: #FFF; }
-        .black { background: #000; }
-        .pink { background: #FFB6C1; }
-        .nose { background: #3D2817; }
-        .empty { background: transparent; }
 
         /* Tail wagging animation */
         @keyframes wag-tail {
@@ -82,6 +65,17 @@
 
         .dog-container.idle {
             animation: idle-bounce 1.5s ease-in-out;
+        }
+
+        /* Bark animation */
+        @keyframes bark {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); }
+            25% { transform: translate(-50%, -50%) scale(1.05); }
+            75% { transform: translate(-50%, -50%) scale(0.98); }
+        }
+
+        .dog-container.barking {
+            animation: bark 0.4s ease-in-out;
         }
 
         /* Timer Panel */
@@ -105,10 +99,29 @@
         .panel-header {
             padding: 20px;
             display: flex;
-            justify-content: center;
+            justify-content: space-between;
             align-items: center;
             cursor: pointer;
             user-select: none;
+        }
+
+        .settings-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #FFE4E9;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s, transform 0.3s;
+            font-size: 18px;
+        }
+
+        .settings-btn:hover {
+            background: #FFD1DC;
+            transform: rotate(90deg);
         }
 
         .toggle-arrow {
@@ -287,6 +300,129 @@
             transform: translateX(24px);
         }
 
+        /* Settings Modal */
+        .settings-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+
+        .settings-modal.active {
+            display: flex;
+        }
+
+        .settings-content {
+            background: white;
+            border-radius: 24px;
+            padding: 30px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+
+        .settings-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .settings-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #8B5A3C;
+        }
+
+        .close-btn {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: #FFE4E9;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 20px;
+            transition: background 0.3s;
+        }
+
+        .close-btn:hover {
+            background: #FFD1DC;
+        }
+
+        .settings-section {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #8B5A3C;
+            margin-bottom: 12px;
+        }
+
+        .option-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 12px;
+        }
+
+        .option-card {
+            padding: 12px;
+            border: 2px solid #FFE4E9;
+            border-radius: 12px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s;
+            background: white;
+        }
+
+        .option-card:hover {
+            border-color: #FFB6C1;
+            transform: translateY(-2px);
+        }
+
+        .option-card.selected {
+            border-color: #8B5A3C;
+            background: #FFF9FA;
+        }
+
+        .option-name {
+            font-size: 14px;
+            color: #8B5A3C;
+            margin-top: 8px;
+        }
+
+        .dog-preview {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto;
+            image-rendering: pixelated;
+        }
+
+        /* Dog name display */
+        .dog-name {
+            position: absolute;
+            top: 40%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.9);
+            padding: 8px 16px;
+            border-radius: 12px;
+            font-size: 14px;
+            color: #8B5A3C;
+            font-weight: bold;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
         /* Responsive */
         @media (max-width: 480px) {
             .timer-panel {
@@ -297,69 +433,81 @@
                 font-size: 36px;
             }
 
-            .dog-sprite {
-                grid-template-columns: repeat(32, 4px);
-                grid-template-rows: repeat(32, 4px);
+            .pixel-dog {
+                width: 140px;
+                height: 140px;
             }
 
-            .pixel {
-                width: 4px;
-                height: 4px;
+            .option-grid {
+                grid-template-columns: repeat(2, 1fr);
             }
         }
     </style>
 </head>
 <body>
+    <!-- Dog Name Display -->
+    <div class="dog-name" id="dogName">Buddy</div>
+
     <!-- Pixel Dog -->
     <div class="dog-container" id="dogContainer">
-        <svg class="pixel-dog" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-            <!-- Body -->
-            <rect x="20" y="28" width="24" height="20" fill="#8B5A3C"/>
-            <rect x="18" y="30" width="2" height="16" fill="#8B5A3C"/>
-            <rect x="44" y="30" width="2" height="16" fill="#8B5A3C"/>
+        <svg class="pixel-dog" id="dogSprite" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+            <!-- Buddy (Original Cuter) -->
+            <g id="buddy">
+                <!-- Body -->
+                <rect x="18" y="30" width="28" height="18" fill="#8B5A3C" rx="2"/>
 
-            <!-- Legs -->
-            <rect x="22" y="48" width="6" height="10" fill="#8B5A3C"/>
-            <rect x="36" y="48" width="6" height="10" fill="#8B5A3C"/>
-            <rect x="22" y="58" width="6" height="2" fill="#5C3A29"/>
-            <rect x="36" y="58" width="6" height="2" fill="#5C3A29"/>
+                <!-- Legs -->
+                <rect x="20" y="48" width="6" height="12" fill="#8B5A3C" rx="1"/>
+                <rect x="38" y="48" width="6" height="12" fill="#8B5A3C" rx="1"/>
+                <rect x="20" y="58" width="6" height="3" fill="#5C3A29" rx="1"/>
+                <rect x="38" y="58" width="6" height="3" fill="#5C3A29" rx="1"/>
 
-            <!-- Head -->
-            <rect x="24" y="14" width="16" height="16" fill="#8B5A3C"/>
-            <rect x="22" y="16" width="2" height="12" fill="#8B5A3C"/>
-            <rect x="40" y="16" width="2" height="12" fill="#8B5A3C"/>
+                <!-- Head -->
+                <rect x="22" y="12" width="20" height="20" fill="#8B5A3C" rx="3"/>
 
-            <!-- Ears -->
-            <rect x="24" y="10" width="6" height="6" fill="#8B5A3C"/>
-            <rect x="34" y="10" width="6" height="6" fill="#8B5A3C"/>
-            <rect x="26" y="12" width="2" height="2" fill="#5C3A29"/>
-            <rect x="36" y="12" width="2" height="2" fill="#5C3A29"/>
+                <!-- Floppy Ears -->
+                <ellipse cx="26" cy="14" rx="5" ry="8" fill="#8B5A3C"/>
+                <ellipse cx="38" cy="14" rx="5" ry="8" fill="#8B5A3C"/>
+                <ellipse cx="26" cy="14" rx="3" ry="5" fill="#5C3A29"/>
+                <ellipse cx="38" cy="14" rx="3" ry="5" fill="#5C3A29"/>
 
-            <!-- Face -->
-            <rect x="28" y="20" width="3" height="3" fill="#000"/>
-            <rect x="33" y="20" width="3" height="3" fill="#000"/>
-            <rect x="30" y="24" width="4" height="4" fill="#3D2817"/>
+                <!-- Big cute eyes -->
+                <ellipse cx="28" cy="20" rx="3" ry="4" fill="#000"/>
+                <ellipse cx="36" cy="20" rx="3" ry="4" fill="#000"/>
+                <circle cx="28" cy="19" r="1.5" fill="#FFF"/>
+                <circle cx="36" cy="19" r="1.5" fill="#FFF"/>
 
-            <!-- Chest patch -->
-            <rect x="28" y="32" width="8" height="10" fill="#FFF"/>
+                <!-- Cute nose -->
+                <ellipse cx="32" cy="26" rx="2" ry="1.5" fill="#3D2817"/>
 
-            <!-- Tail -->
-            <g class="tail" transform-origin="44 30">
-                <rect x="44" y="30" width="4" height="2" fill="#8B5A3C"/>
-                <rect x="48" y="28" width="4" height="2" fill="#8B5A3C"/>
-                <rect x="52" y="26" width="4" height="2" fill="#8B5A3C"/>
+                <!-- Smile -->
+                <path d="M 28 27 Q 32 29 36 27" stroke="#3D2817" stroke-width="1" fill="none" stroke-linecap="round"/>
+
+                <!-- Tongue (optional cute detail) -->
+                <ellipse cx="32" cy="29" rx="2" ry="1.5" fill="#FFB6C1"/>
+
+                <!-- Chest patch -->
+                <ellipse cx="32" cy="38" rx="6" ry="8" fill="#FFF"/>
+
+                <!-- Tail -->
+                <g class="tail" transform-origin="46 32">
+                    <path d="M 46 32 Q 50 30 54 28 Q 56 27 58 29" stroke="#8B5A3C" stroke-width="4" fill="none" stroke-linecap="round"/>
+                </g>
+
+                <!-- Collar -->
+                <rect x="22" y="30" width="20" height="3" fill="#FFB6C1" rx="1"/>
+                <circle cx="32" cy="31.5" r="2" fill="#FFD700"/>
+                <circle cx="32" cy="31.5" r="1" fill="#FFA500"/>
             </g>
-
-            <!-- Collar -->
-            <rect x="24" y="28" width="16" height="3" fill="#FFB6C1"/>
-            <rect x="31" y="28" width="2" height="3" fill="#FFD700"/>
         </svg>
     </div>
 
     <!-- Timer Panel -->
     <div class="timer-panel collapsed" id="timerPanel">
-        <div class="panel-header" id="panelHeader">
-            <div class="toggle-arrow"></div>
+        <div class="panel-header">
+            <button class="settings-btn" id="settingsBtn" onclick="event.stopPropagation()">⚙️</button>
+            <div class="toggle-arrow" id="panelHeader"></div>
+            <div style="width: 32px;"></div> <!-- Spacer -->
         </div>
         <div class="panel-content">
             <div class="timer-display" id="timerDisplay">00:00</div>
@@ -390,7 +538,752 @@
         </div>
     </div>
 
+    <!-- Settings Modal -->
+    <div class="settings-modal" id="settingsModal">
+        <div class="settings-content">
+            <div class="settings-header">
+                <div class="settings-title">Settings</div>
+                <button class="close-btn" id="closeSettings">×</button>
+            </div>
+
+            <div class="settings-section">
+                <div class="section-title">Choose Your Dog</div>
+                <div class="option-grid" id="dogSelector">
+                    <!-- Dog options will be inserted here -->
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <div class="section-title">Timer Sound</div>
+                <div class="option-grid" id="soundSelector">
+                    <!-- Sound options will be inserted here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
+        // Dog definitions
+        const dogs = {
+            buddy: {
+                name: "Buddy",
+                svg: `
+                    <rect x="18" y="30" width="28" height="18" fill="#8B5A3C" rx="2"/>
+                    <rect x="20" y="48" width="6" height="12" fill="#8B5A3C" rx="1"/>
+                    <rect x="38" y="48" width="6" height="12" fill="#8B5A3C" rx="1"/>
+                    <rect x="20" y="58" width="6" height="3" fill="#5C3A29" rx="1"/>
+                    <rect x="38" y="58" width="6" height="3" fill="#5C3A29" rx="1"/>
+                    <rect x="22" y="12" width="20" height="20" fill="#8B5A3C" rx="3"/>
+                    <ellipse cx="26" cy="14" rx="5" ry="8" fill="#8B5A3C"/>
+                    <ellipse cx="38" cy="14" rx="5" ry="8" fill="#8B5A3C"/>
+                    <ellipse cx="26" cy="14" rx="3" ry="5" fill="#5C3A29"/>
+                    <ellipse cx="38" cy="14" rx="3" ry="5" fill="#5C3A29"/>
+                    <ellipse cx="28" cy="20" rx="3" ry="4" fill="#000"/>
+                    <ellipse cx="36" cy="20" rx="3" ry="4" fill="#000"/>
+                    <circle cx="28" cy="19" r="1.5" fill="#FFF"/>
+                    <circle cx="36" cy="19" r="1.5" fill="#FFF"/>
+                    <ellipse cx="32" cy="26" rx="2" ry="1.5" fill="#3D2817"/>
+                    <path d="M 28 27 Q 32 29 36 27" stroke="#3D2817" stroke-width="1" fill="none" stroke-linecap="round"/>
+                    <ellipse cx="32" cy="29" rx="2" ry="1.5" fill="#FFB6C1"/>
+                    <ellipse cx="32" cy="38" rx="6" ry="8" fill="#FFF"/>
+                    <g class="tail" transform-origin="46 32">
+                        <path d="M 46 32 Q 50 30 54 28 Q 56 27 58 29" stroke="#8B5A3C" stroke-width="4" fill="none" stroke-linecap="round"/>
+                    </g>
+                    <rect x="22" y="30" width="20" height="3" fill="#FFB6C1" rx="1"/>
+                    <circle cx="32" cy="31.5" r="2" fill="#FFD700"/>
+                    <circle cx="32" cy="31.5" r="1" fill="#FFA500"/>
+                `
+            },
+            max: {
+                name: "Max",
+                svg: `
+                    <rect x="18" y="32" width="28" height="16" fill="#D2691E"/>
+                    <rect x="20" y="48" width="5" height="10" fill="#D2691E"/>
+                    <rect x="39" y="48" width="5" height="10" fill="#D2691E"/>
+                    <rect x="20" y="57" width="5" height="2" fill="#8B4513"/>
+                    <rect x="39" y="57" width="5" height="2" fill="#8B4513"/>
+                    <circle cx="32" cy="22" r="11" fill="#D2691E"/>
+                    <circle cx="26" cy="18" r="4" fill="#D2691E"/>
+                    <circle cx="38" cy="18" r="4" fill="#D2691E"/>
+                    <circle cx="28" cy="22" r="2.5" fill="#000"/>
+                    <circle cx="36" cy="22" r="2.5" fill="#000"/>
+                    <circle cx="28" cy="21" r="1" fill="#FFF"/>
+                    <circle cx="36" cy="21" r="1" fill="#FFF"/>
+                    <circle cx="32" cy="27" r="2" fill="#000"/>
+                    <path d="M 29 29 Q 32 30 35 29" stroke="#000" stroke-width="0.5" fill="none"/>
+                    <ellipse cx="32" cy="36" rx="5" ry="6" fill="#FFF"/>
+                    <g class="tail" transform-origin="46 34">
+                        <rect x="46" y="33" width="3" height="8" fill="#D2691E" rx="1.5"/>
+                        <circle cx="47.5" cy="41" r="3" fill="#D2691E"/>
+                    </g>
+                    <rect x="22" y="32" width="20" height="2.5" fill="#FF6347"/>
+                    <circle cx="32" cy="33" r="1.5" fill="#FFD700"/>
+                `
+            },
+            luna: {
+                name: "Luna",
+                svg: `
+                    <ellipse cx="32" cy="38" rx="14" ry="10" fill="#E8E8E8"/>
+                    <rect x="22" y="48" width="4" height="10" fill="#E8E8E8"/>
+                    <rect x="38" y="48" width="4" height="10" fill="#E8E8E8"/>
+                    <circle cx="32" cy="20" r="10" fill="#E8E8E8"/>
+                    <path d="M 24 10 L 20 8 L 22 14 Z" fill="#E8E8E8"/>
+                    <path d="M 40 10 L 44 8 L 42 14 Z" fill="#E8E8E8"/>
+                    <ellipse cx="28" cy="20" rx="3" ry="3.5" fill="#000"/>
+                    <ellipse cx="36" cy="20" rx="3" ry="3.5" fill="#000"/>
+                    <circle cx="27" cy="19" r="1.2" fill="#FFF"/>
+                    <circle cx="35" cy="19" r="1.2" fill="#FFF"/>
+                    <circle cx="32" cy="25" r="1.5" fill="#FFB6C1"/>
+                    <path d="M 29 26 Q 32 27 35 26" stroke="#FFB6C1" stroke-width="0.8" fill="none"/>
+                    <g class="tail" transform-origin="46 38">
+                        <path d="M 46 38 Q 52 36 56 32" stroke="#E8E8E8" stroke-width="5" fill="none" stroke-linecap="round"/>
+                    </g>
+                    <circle cx="32" cy="32" r="1" fill="#DDD"/>
+                    <circle cx="28" cy="34" r="0.8" fill="#DDD"/>
+                    <circle cx="36" cy="34" r="0.8" fill="#DDD"/>
+                `
+            },
+            rocky: {
+                name: "Rocky",
+                svg: `
+                    <rect x="16" y="32" width="32" height="16" fill="#654321" rx="2"/>
+                    <rect x="18" y="48" width="7" height="10" fill="#654321"/>
+                    <rect x="39" y="48" width="7" height="10" fill="#654321"/>
+                    <rect x="18" y="57" width="7" height="2" fill="#4A3219"/>
+                    <rect x="39" y="57" width="7" height="2" fill="#4A3219"/>
+                    <rect x="20" y="14" width="24" height="20" fill="#654321" rx="3"/>
+                    <rect x="24" y="12" width="6" height="8" fill="#654321"/>
+                    <rect x="34" y="12" width="6" height="8" fill="#654321"/>
+                    <rect x="26" y="22" width="4" height="4" fill="#000"/>
+                    <rect x="34" y="22" width="4" height="4" fill="#000"/>
+                    <rect x="27" y="23" width="1.5" height="1.5" fill="#FFF"/>
+                    <rect x="35" y="23" width="1.5" height="1.5" fill="#FFF"/>
+                    <rect x="30" y="28" width="4" height="3" fill="#000"/>
+                    <rect x="26" y="34" width="12" height="8" fill="#8B7355"/>
+                    <g class="tail" transform-origin="48 34">
+                        <rect x="48" y="32" width="4" height="3" fill="#654321"/>
+                        <rect x="52" y="30" width="4" height="3" fill="#654321"/>
+                    </g>
+                    <rect x="20" y="32" width="24" height="3" fill="#8B0000"/>
+                `
+            },
+            daisy: {
+                name: "Daisy",
+                svg: `
+                    <ellipse cx="32" cy="36" rx="12" ry="9" fill="#FFE4B5"/>
+                    <ellipse cx="24" cy="48" rx="2.5" ry="6" fill="#FFE4B5"/>
+                    <ellipse cx="40" cy="48" rx="2.5" ry="6" fill="#FFE4B5"/>
+                    <circle cx="32" cy="18" r="9" fill="#FFE4B5"/>
+                    <ellipse cx="25" cy="14" rx="4" ry="6" fill="#FFE4B5"/>
+                    <ellipse cx="39" cy="14" rx="4" ry="6" fill="#FFE4B5"/>
+                    <circle cx="29" cy="18" r="2.5" fill="#000"/>
+                    <circle cx="35" cy="18" r="2.5" fill="#000"/>
+                    <circle cx="28.5" cy="17" r="1" fill="#FFF"/>
+                    <circle cx="34.5" cy="17" r="1" fill="#FFF"/>
+                    <path d="M 29 21 L 32 23 L 35 21" stroke="#000" stroke-width="0.8" fill="none" stroke-linecap="round"/>
+                    <path d="M 28 23 Q 32 25 36 23" stroke="#FFB6C1" stroke-width="1" fill="none"/>
+                    <ellipse cx="32" cy="38" rx="4" ry="5" fill="#FFF"/>
+                    <g class="tail" transform-origin="44 36">
+                        <path d="M 44 36 Q 50 34 54 30" stroke="#FFE4B5" stroke-width="4" fill="none" stroke-linecap="round"/>
+                    </g>
+                    <rect x="24" y="26" width="16" height="2" fill="#FF69B4"/>
+                    <circle cx="32" cy="27" r="1.5" fill="#FFD700"/>
+                    <path d="M 27 11 L 28 8 L 29 11" fill="#FF69B4"/>
+                    <path d="M 35 11 L 36 8 L 37 11" fill="#FF69B4"/>
+                `
+            },
+            charlie: {
+                name: "Charlie",
+                svg: `
+                    <rect x="20" y="34" width="24" height="14" fill="#000" rx="2"/>
+                    <rect x="22" y="48" width="5" height="10" fill="#000"/>
+                    <rect x="37" y="48" width="5" height="10" fill="#000"/>
+                    <rect x="24" y="16" width="16" height="16" fill="#000" rx="2"/>
+                    <circle cx="26" cy="14" r="4" fill="#000"/>
+                    <circle cx="38" cy="14" r="4" fill="#000"/>
+                    <circle cx="29" cy="22" r="2" fill="#FFF"/>
+                    <circle cx="35" cy="22" r="2" fill="#FFF"/>
+                    <circle cx="29" cy="22" r="1" fill="#8B4513"/>
+                    <circle cx="35" cy="22" r="1" fill="#8B4513"/>
+                    <ellipse cx="32" cy="26" rx="1.5" ry="1" fill="#FFF"/>
+                    <path d="M 30 27 Q 32 28 34 27" stroke="#FFF" stroke-width="0.5" fill="none"/>
+                    <ellipse cx="32" cy="38" rx="5" ry="6" fill="#FFF"/>
+                    <g class="tail" transform-origin="44 36">
+                        <circle cx="47" cy="38" r="4" fill="#000"/>
+                    </g>
+                    <rect x="24" y="32" width="16" height="2.5" fill="#FF0000"/>
+                `
+            },
+            cooper: {
+                name: "Cooper",
+                svg: `
+                    <rect x="18" y="30" width="28" height="18" fill="#CD853F" rx="3"/>
+                    <rect x="22" y="48" width="6" height="11" fill="#CD853F"/>
+                    <rect x="36" y="48" width="6" height="11" fill="#CD853F"/>
+                    <rect x="22" y="58" width="6" height="2" fill="#8B5A3C"/>
+                    <rect x="36" y="58" width="6" height="2" fill="#8B5A3C"/>
+                    <ellipse cx="32" cy="20" rx="11" ry="10" fill="#CD853F"/>
+                    <ellipse cx="24" cy="16" rx="5" ry="7" fill="#CD853F"/>
+                    <ellipse cx="40" cy="16" rx="5" ry="7" fill="#CD853F"/>
+                    <ellipse cx="26" cy="16" rx="2" ry="4" fill="#654321"/>
+                    <ellipse cx="38" cy="16" rx="2" ry="4" fill="#654321"/>
+                    <ellipse cx="28" cy="21" rx="2.5" ry="3" fill="#000"/>
+                    <ellipse cx="36" cy="21" rx="2.5" ry="3" fill="#000"/>
+                    <ellipse cx="28" cy="20" rx="1" ry="1.5" fill="#FFF"/>
+                    <ellipse cx="36" cy="20" rx="1" ry="1.5" fill="#FFF"/>
+                    <ellipse cx="32" cy="26" rx="2" ry="1.5" fill="#654321"/>
+                    <path d="M 32 26 L 32 28" stroke="#654321" stroke-width="1"/>
+                    <path d="M 29 28 Q 32 30 35 28" stroke="#654321" stroke-width="1" fill="none"/>
+                    <ellipse cx="32" cy="38" rx="7" ry="9" fill="#F4A460"/>
+                    <g class="tail" transform-origin="46 32">
+                        <ellipse cx="50" cy="32" rx="6" ry="3" fill="#CD853F" transform="rotate(30 50 32)"/>
+                    </g>
+                    <rect x="22" y="30" width="20" height="3" fill="#4169E1"/>
+                    <circle cx="32" cy="31.5" r="1.8" fill="#FFD700"/>
+                `
+            },
+            bella: {
+                name: "Bella",
+                svg: `
+                    <ellipse cx="32" cy="38" rx="13" ry="9" fill="#F5DEB3"/>
+                    <ellipse cx="25" cy="48" rx="3" ry="7" fill="#F5DEB3"/>
+                    <ellipse cx="39" cy="48" rx="3" ry="7" fill="#F5DEB3"/>
+                    <circle cx="32" cy="19" r="9" fill="#F5DEB3"/>
+                    <path d="M 26 10 Q 24 8 22 10 Q 24 12 26 14 Z" fill="#F5DEB3"/>
+                    <path d="M 38 10 Q 40 8 42 10 Q 40 12 38 14 Z" fill="#F5DEB3"/>
+                    <ellipse cx="29" cy="19" rx="2.5" ry="3" fill="#000"/>
+                    <ellipse cx="35" cy="19" rx="2.5" ry="3" fill="#000"/>
+                    <ellipse cx="28.5" cy="18" rx="1" ry="1.3" fill="#FFF"/>
+                    <ellipse cx="34.5" cy="18" rx="1" ry="1.3" fill="#FFF"/>
+                    <ellipse cx="32" cy="23" rx="1.5" ry="1.2" fill="#DEB887"/>
+                    <path d="M 30 24 Q 32 26 34 24" stroke="#DEB887" stroke-width="0.8" fill="none"/>
+                    <circle cx="32" cy="27" r="1" fill="#FFB6C1"/>
+                    <ellipse cx="32" cy="39" rx="5" ry="6" fill="#FFF"/>
+                    <g class="tail" transform-origin="45 38">
+                        <path d="M 45 38 Q 52 35 56 30" stroke="#F5DEB3" stroke-width="4.5" fill="none" stroke-linecap="round"/>
+                    </g>
+                    <path d="M 24 30 Q 32 28 40 30" stroke="#FF1493" stroke-width="2.5" fill="none"/>
+                    <circle cx="32" cy="29" r="2" fill="#FF1493"/>
+                    <circle cx="32" cy="29" r="0.8" fill="#FFD700"/>
+                `
+            },
+            milo: {
+                name: "Milo",
+                svg: `
+                    <rect x="19" y="33" width="26" height="15" fill="#A0522D" rx="2"/>
+                    <rect x="21" y="48" width="5" height="10" fill="#A0522D"/>
+                    <rect x="38" y="48" width="5" height="10" fill="#A0522D"/>
+                    <rect x="21" y="57" width="5" height="2" fill="#654321"/>
+                    <rect x="38" y="57" width="5" height="2" fill="#654321"/>
+                    <circle cx="32" cy="20" r="10" fill="#A0522D"/>
+                    <ellipse cx="25" cy="15" rx="4" ry="5" fill="#A0522D"/>
+                    <ellipse cx="39" cy="15" rx="4" ry="5" fill="#A0522D"/>
+                    <circle cx="28" cy="20" r="3" fill="#000"/>
+                    <circle cx="36" cy="20" r="3" fill="#000"/>
+                    <circle cx="27" cy="19" r="1.5" fill="#FFF"/>
+                    <circle cx="35" cy="19" r="1.5" fill="#FFF"/>
+                    <circle cx="32" cy="25" r="2" fill="#8B4513"/>
+                    <path d="M 32 25 L 32 27" stroke="#8B4513" stroke-width="1"/>
+                    <path d="M 28 27 Q 32 29 36 27" stroke="#8B4513" stroke-width="1.2" fill="none"/>
+                    <ellipse cx="32" cy="28.5" rx="1.5" ry="1" fill="#FFB6C1"/>
+                    <rect x="28" y="35" width="8" height="8" fill="#DEB887"/>
+                    <g class="tail" transform-origin="45 35">
+                        <circle cx="48" cy="36" r="3.5" fill="#A0522D"/>
+                    </g>
+                    <rect x="23" y="33" width="18" height="2.5" fill="#00CED1"/>
+                    <circle cx="32" cy="34" r="1.5" fill="#FFFF00"/>
+                `
+            },
+            olive: {
+                name: "Olive",
+                svg: `
+                    <ellipse cx="32" cy="37" rx="12" ry="8" fill="#556B2F"/>
+                    <rect x="24" y="45" width="4" height="12" fill="#556B2F"/>
+                    <rect x="36" y="45" width="4" height="12" fill="#556B2F"/>
+                    <ellipse cx="32" cy="19" rx="9" ry="8" fill="#556B2F"/>
+                    <path d="M 26 12 L 24 8 L 28 12 Z" fill="#556B2F"/>
+                    <path d="M 38 12 L 40 8 L 36 12 Z" fill="#556B2F"/>
+                    <ellipse cx="29" cy="19" rx="2" ry="2.5" fill="#000"/>
+                    <ellipse cx="35" cy="19" rx="2" ry="2.5" fill="#000"/>
+                    <circle cx="28.5" cy="18.5" r="0.8" fill="#FFF"/>
+                    <circle cx="34.5" cy="18.5" r="0.8" fill="#FFF"/>
+                    <ellipse cx="32" cy="23" rx="1.5" ry="1" fill="#3C5028"/>
+                    <path d="M 30 24 Q 32 25 34 24" stroke="#3C5028" stroke-width="0.7" fill="none"/>
+                    <ellipse cx="32" cy="39" rx="4" ry="5" fill="#F0E68C"/>
+                    <g class="tail" transform-origin="44 37">
+                        <path d="M 44 37 Q 48 36 52 34 Q 54 33 54 35" stroke="#556B2F" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+                    </g>
+                    <rect x="24" y="29" width="16" height="2" fill="#FFD700"/>
+                    <circle cx="32" cy="30" r="1.2" fill="#8B4513"/>
+                `
+            },
+            pepper: {
+                name: "Pepper",
+                svg: `
+                    <rect x="20" y="32" width="24" height="16" fill="#2F4F4F" rx="2"/>
+                    <rect x="23" y="48" width="5" height="10" fill="#2F4F4F"/>
+                    <rect x="36" y="48" width="5" height="10" fill="#2F4F4F"/>
+                    <rect x="23" y="57" width="5" height="2" fill="#1C1C1C"/>
+                    <rect x="36" y="57" width="5" height="2" fill="#1C1C1C"/>
+                    <rect x="24" y="15" width="16" height="16" fill="#2F4F4F" rx="3"/>
+                    <path d="M 26 12 L 24 10 L 28 12" fill="#2F4F4F"/>
+                    <path d="M 38 12 L 40 10 L 36 12" fill="#2F4F4F"/>
+                    <circle cx="29" cy="21" r="2" fill="#FFF"/>
+                    <circle cx="35" cy="21" r="2" fill="#FFF"/>
+                    <circle cx="29" cy="21" r="1.2" fill="#000"/>
+                    <circle cx="35" cy="21" r="1.2" fill="#000"/>
+                    <circle cx="28.5" cy="20.5" r="0.5" fill="#FFF"/>
+                    <circle cx="34.5" cy="20.5" r="0.5" fill="#FFF"/>
+                    <ellipse cx="32" cy="25" rx="1.5" ry="1.2" fill="#1C1C1C"/>
+                    <path d="M 30 26 Q 32 27 34 26" stroke="#1C1C1C" stroke-width="0.8" fill="none"/>
+                    <rect x="29" y="35" width="6" height="7" fill="#FFF"/>
+                    <g class="tail" transform-origin="44 34">
+                        <rect x="44" y="33" width="8" height="3" fill="#2F4F4F" rx="1.5"/>
+                    </g>
+                    <rect x="24" y="31" width="16" height="2" fill="#DC143C"/>
+                `
+            }
+        };
+
+        // Sound definitions
+        const sounds = {
+            bell: {
+                name: "Boxing Bell",
+                icon: "🔔",
+                play: function(audioContext) {
+                    const playTone = (delay) => {
+                        setTimeout(() => {
+                            const osc = audioContext.createOscillator();
+                            const gain = audioContext.createGain();
+                            osc.connect(gain);
+                            gain.connect(audioContext.destination);
+                            osc.frequency.setValueAtTime(800, audioContext.currentTime);
+                            osc.frequency.setValueAtTime(600, audioContext.currentTime + 0.1);
+                            gain.gain.setValueAtTime(0.3, audioContext.currentTime);
+                            gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+                            osc.start(audioContext.currentTime);
+                            osc.stop(audioContext.currentTime + 0.5);
+                        }, delay);
+                    };
+                    playTone(0);
+                    playTone(200);
+                }
+            },
+            chime: {
+                name: "Wind Chime",
+                icon: "🎐",
+                play: function(audioContext) {
+                    const frequencies = [523.25, 659.25, 783.99, 1046.50];
+                    frequencies.forEach((freq, i) => {
+                        setTimeout(() => {
+                            const osc = audioContext.createOscillator();
+                            const gain = audioContext.createGain();
+                            osc.connect(gain);
+                            gain.connect(audioContext.destination);
+                            osc.frequency.value = freq;
+                            osc.type = 'sine';
+                            gain.gain.setValueAtTime(0.15, audioContext.currentTime);
+                            gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 1);
+                            osc.start(audioContext.currentTime);
+                            osc.stop(audioContext.currentTime + 1);
+                        }, i * 150);
+                    });
+                }
+            },
+            beep: {
+                name: "Simple Beep",
+                icon: "📢",
+                play: function(audioContext) {
+                    const osc = audioContext.createOscillator();
+                    const gain = audioContext.createGain();
+                    osc.connect(gain);
+                    gain.connect(audioContext.destination);
+                    osc.frequency.value = 880;
+                    osc.type = 'square';
+                    gain.gain.setValueAtTime(0.2, audioContext.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+                    osc.start(audioContext.currentTime);
+                    osc.stop(audioContext.currentTime + 0.3);
+                }
+            },
+            alarm: {
+                name: "Alarm Clock",
+                icon: "⏰",
+                play: function(audioContext) {
+                    for (let i = 0; i < 3; i++) {
+                        setTimeout(() => {
+                            const osc = audioContext.createOscillator();
+                            const gain = audioContext.createGain();
+                            osc.connect(gain);
+                            gain.connect(audioContext.destination);
+                            osc.frequency.setValueAtTime(1000, audioContext.currentTime);
+                            osc.type = 'square';
+                            gain.gain.setValueAtTime(0.2, audioContext.currentTime);
+                            gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+                            osc.start(audioContext.currentTime);
+                            osc.stop(audioContext.currentTime + 0.2);
+                        }, i * 300);
+                    }
+                }
+            },
+            gong: {
+                name: "Meditation Gong",
+                icon: "🎵",
+                play: function(audioContext) {
+                    const osc = audioContext.createOscillator();
+                    const gain = audioContext.createGain();
+                    osc.connect(gain);
+                    gain.connect(audioContext.destination);
+                    osc.frequency.value = 200;
+                    osc.type = 'sine';
+                    gain.gain.setValueAtTime(0.3, audioContext.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 2);
+                    osc.start(audioContext.currentTime);
+                    osc.stop(audioContext.currentTime + 2);
+                }
+            },
+            trumpet: {
+                name: "Trumpet",
+                icon: "🎺",
+                play: function(audioContext) {
+                    const notes = [392, 440, 494, 523];
+                    notes.forEach((freq, i) => {
+                        setTimeout(() => {
+                            const osc = audioContext.createOscillator();
+                            const gain = audioContext.createGain();
+                            osc.connect(gain);
+                            gain.connect(audioContext.destination);
+                            osc.frequency.value = freq;
+                            osc.type = 'triangle';
+                            gain.gain.setValueAtTime(0.2, audioContext.currentTime);
+                            gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+                            osc.start(audioContext.currentTime);
+                            osc.stop(audioContext.currentTime + 0.3);
+                        }, i * 200);
+                    });
+                }
+            },
+            whistle: {
+                name: "Train Whistle",
+                icon: "🚂",
+                play: function(audioContext) {
+                    const osc = audioContext.createOscillator();
+                    const gain = audioContext.createGain();
+                    osc.connect(gain);
+                    gain.connect(audioContext.destination);
+                    osc.frequency.setValueAtTime(1200, audioContext.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(800, audioContext.currentTime + 0.5);
+                    osc.type = 'sine';
+                    gain.gain.setValueAtTime(0.25, audioContext.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+                    osc.start(audioContext.currentTime);
+                    osc.stop(audioContext.currentTime + 0.5);
+                }
+            },
+            marimba: {
+                name: "Marimba",
+                icon: "🎹",
+                play: function(audioContext) {
+                    [523.25, 659.25, 783.99].forEach((freq, i) => {
+                        setTimeout(() => {
+                            const osc = audioContext.createOscillator();
+                            const gain = audioContext.createGain();
+                            osc.connect(gain);
+                            gain.connect(audioContext.destination);
+                            osc.frequency.value = freq;
+                            osc.type = 'sine';
+                            gain.gain.setValueAtTime(0.3, audioContext.currentTime);
+                            gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+                            osc.start(audioContext.currentTime);
+                            osc.stop(audioContext.currentTime + 0.5);
+                        }, i * 100);
+                    });
+                }
+            },
+            ding: {
+                name: "Ding Dong",
+                icon: "🛎️",
+                play: function(audioContext) {
+                    setTimeout(() => {
+                        const osc1 = audioContext.createOscillator();
+                        const gain1 = audioContext.createGain();
+                        osc1.connect(gain1);
+                        gain1.connect(audioContext.destination);
+                        osc1.frequency.value = 800;
+                        osc1.type = 'sine';
+                        gain1.gain.setValueAtTime(0.3, audioContext.currentTime);
+                        gain1.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+                        osc1.start(audioContext.currentTime);
+                        osc1.stop(audioContext.currentTime + 0.5);
+                    }, 0);
+                    setTimeout(() => {
+                        const osc2 = audioContext.createOscillator();
+                        const gain2 = audioContext.createGain();
+                        osc2.connect(gain2);
+                        gain2.connect(audioContext.destination);
+                        osc2.frequency.value = 600;
+                        osc2.type = 'sine';
+                        gain2.gain.setValueAtTime(0.3, audioContext.currentTime);
+                        gain2.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+                        osc2.start(audioContext.currentTime);
+                        osc2.stop(audioContext.currentTime + 0.5);
+                    }, 400);
+                }
+            },
+            space: {
+                name: "Space Blip",
+                icon: "🚀",
+                play: function(audioContext) {
+                    const osc = audioContext.createOscillator();
+                    const gain = audioContext.createGain();
+                    osc.connect(gain);
+                    gain.connect(audioContext.destination);
+                    osc.frequency.setValueAtTime(1500, audioContext.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(300, audioContext.currentTime + 0.3);
+                    osc.type = 'square';
+                    gain.gain.setValueAtTime(0.2, audioContext.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+                    osc.start(audioContext.currentTime);
+                    osc.stop(audioContext.currentTime + 0.3);
+                }
+            },
+            cuckoo: {
+                name: "Cuckoo Clock",
+                icon: "🕰️",
+                play: function(audioContext) {
+                    for (let i = 0; i < 2; i++) {
+                        setTimeout(() => {
+                            const osc1 = audioContext.createOscillator();
+                            const osc2 = audioContext.createOscillator();
+                            const gain = audioContext.createGain();
+
+                            osc1.connect(gain);
+                            osc2.connect(gain);
+                            gain.connect(audioContext.destination);
+
+                            osc1.frequency.value = 800;
+                            osc2.frequency.value = 600;
+                            osc1.type = 'sine';
+                            osc2.type = 'sine';
+
+                            gain.gain.setValueAtTime(0.2, audioContext.currentTime);
+                            gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+
+                            osc1.start(audioContext.currentTime);
+                            osc2.start(audioContext.currentTime + 0.1);
+                            osc1.stop(audioContext.currentTime + 0.1);
+                            osc2.stop(audioContext.currentTime + 0.2);
+                        }, i * 500);
+                    }
+                }
+            },
+            harp: {
+                name: "Harp Gliss",
+                icon: "🎻",
+                play: function(audioContext) {
+                    const scale = [261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 493.88, 523.25];
+                    scale.forEach((freq, i) => {
+                        setTimeout(() => {
+                            const osc = audioContext.createOscillator();
+                            const gain = audioContext.createGain();
+                            osc.connect(gain);
+                            gain.connect(audioContext.destination);
+                            osc.frequency.value = freq;
+                            osc.type = 'triangle';
+                            gain.gain.setValueAtTime(0.15, audioContext.currentTime);
+                            gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.4);
+                            osc.start(audioContext.currentTime);
+                            osc.stop(audioContext.currentTime + 0.4);
+                        }, i * 50);
+                    });
+                }
+            }
+        };
+
+        // State
+        let currentDog = 'buddy';
+        let currentSound = 'bell';
+        let audioContext = null;
+
+        // Initialize audio
+        function initAudio() {
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+
+        // Play bark sound
+        function playBark() {
+            initAudio();
+
+            const dogContainer = document.getElementById('dogContainer');
+            dogContainer.classList.add('barking');
+            setTimeout(() => dogContainer.classList.remove('barking'), 400);
+
+            // Woof sound
+            const osc = audioContext.createOscillator();
+            const gain = audioContext.createGain();
+
+            osc.connect(gain);
+            gain.connect(audioContext.destination);
+
+            osc.frequency.setValueAtTime(200, audioContext.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(100, audioContext.currentTime + 0.15);
+            osc.type = 'sawtooth';
+
+            gain.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.15);
+
+            osc.start(audioContext.currentTime);
+            osc.stop(audioContext.currentTime + 0.15);
+
+            // Second bark
+            setTimeout(() => {
+                const osc2 = audioContext.createOscillator();
+                const gain2 = audioContext.createGain();
+
+                osc2.connect(gain2);
+                gain2.connect(audioContext.destination);
+
+                osc2.frequency.setValueAtTime(220, audioContext.currentTime);
+                osc2.frequency.exponentialRampToValueAtTime(110, audioContext.currentTime + 0.15);
+                osc2.type = 'sawtooth';
+
+                gain2.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gain2.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.15);
+
+                osc2.start(audioContext.currentTime);
+                osc2.stop(audioContext.currentTime + 0.15);
+            }, 200);
+        }
+
+        // Play timer sound
+        function playTimerSound() {
+            initAudio();
+            sounds[currentSound].play(audioContext);
+        }
+
+        // Switch dog
+        function switchDog(dogId) {
+            currentDog = dogId;
+            const dogSprite = document.getElementById('dogSprite');
+            dogSprite.innerHTML = dogs[dogId].svg;
+            document.getElementById('dogName').textContent = dogs[dogId].name;
+
+            // Update selected state
+            document.querySelectorAll('#dogSelector .option-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            document.querySelector(`[data-dog="${dogId}"]`).classList.add('selected');
+
+            // Save to localStorage
+            localStorage.setItem('selectedDog', dogId);
+        }
+
+        // Switch sound
+        function switchSound(soundId) {
+            currentSound = soundId;
+
+            // Update selected state
+            document.querySelectorAll('#soundSelector .option-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            document.querySelector(`[data-sound="${soundId}"]`).classList.add('selected');
+
+            // Save to localStorage
+            localStorage.setItem('selectedSound', soundId);
+        }
+
+        // Initialize settings
+        function initSettings() {
+            // Populate dog selector
+            const dogSelector = document.getElementById('dogSelector');
+            Object.keys(dogs).forEach(dogId => {
+                const card = document.createElement('div');
+                card.className = 'option-card';
+                card.dataset.dog = dogId;
+                if (dogId === currentDog) card.classList.add('selected');
+
+                const preview = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                preview.setAttribute('class', 'dog-preview');
+                preview.setAttribute('viewBox', '0 0 64 64');
+                preview.innerHTML = dogs[dogId].svg;
+
+                const name = document.createElement('div');
+                name.className = 'option-name';
+                name.textContent = dogs[dogId].name;
+
+                card.appendChild(preview);
+                card.appendChild(name);
+                card.addEventListener('click', () => switchDog(dogId));
+
+                dogSelector.appendChild(card);
+            });
+
+            // Populate sound selector
+            const soundSelector = document.getElementById('soundSelector');
+            Object.keys(sounds).forEach(soundId => {
+                const card = document.createElement('div');
+                card.className = 'option-card';
+                card.dataset.sound = soundId;
+                if (soundId === currentSound) card.classList.add('selected');
+
+                const icon = document.createElement('div');
+                icon.style.fontSize = '32px';
+                icon.textContent = sounds[soundId].icon;
+
+                const name = document.createElement('div');
+                name.className = 'option-name';
+                name.textContent = sounds[soundId].name;
+
+                card.appendChild(icon);
+                card.appendChild(name);
+                card.addEventListener('click', () => {
+                    switchSound(soundId);
+                    // Play preview
+                    initAudio();
+                    sounds[soundId].play(audioContext);
+                });
+
+                soundSelector.appendChild(card);
+            });
+
+            // Load saved preferences
+            const savedDog = localStorage.getItem('selectedDog');
+            const savedSound = localStorage.getItem('selectedSound');
+
+            if (savedDog && dogs[savedDog]) {
+                switchDog(savedDog);
+            }
+
+            if (savedSound && sounds[savedSound]) {
+                currentSound = savedSound;
+                document.querySelector(`[data-sound="${savedSound}"]`).classList.add('selected');
+            }
+        }
+
+        // Settings modal
+        const settingsModal = document.getElementById('settingsModal');
+        const settingsBtn = document.getElementById('settingsBtn');
+        const closeSettings = document.getElementById('closeSettings');
+
+        settingsBtn.addEventListener('click', () => {
+            settingsModal.classList.add('active');
+        });
+
+        closeSettings.addEventListener('click', () => {
+            settingsModal.classList.remove('active');
+        });
+
+        settingsModal.addEventListener('click', (e) => {
+            if (e.target === settingsModal) {
+                settingsModal.classList.remove('active');
+            }
+        });
+
+        // Dog click handler
+        document.getElementById('dogContainer').addEventListener('click', playBark);
+
         // Timer Panel Toggle
         const timerPanel = document.getElementById('timerPanel');
         const panelHeader = document.getElementById('panelHeader');
@@ -411,53 +1304,6 @@
         const stopBtn = document.getElementById('stopBtn');
         const loopToggle = document.getElementById('loopToggle');
 
-        // Audio Context for bell sound
-        let audioContext = null;
-
-        function initAudio() {
-            if (!audioContext) {
-                audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            }
-        }
-
-        function playBellSound() {
-            initAudio();
-
-            const oscillator = audioContext.createOscillator();
-            const gainNode = audioContext.createGain();
-
-            oscillator.connect(gainNode);
-            gainNode.connect(audioContext.destination);
-
-            // Boxing bell sound (two tones)
-            oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
-            oscillator.frequency.setValueAtTime(600, audioContext.currentTime + 0.1);
-
-            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
-
-            oscillator.start(audioContext.currentTime);
-            oscillator.stop(audioContext.currentTime + 0.5);
-
-            // Second ding
-            setTimeout(() => {
-                const osc2 = audioContext.createOscillator();
-                const gain2 = audioContext.createGain();
-
-                osc2.connect(gain2);
-                gain2.connect(audioContext.destination);
-
-                osc2.frequency.setValueAtTime(800, audioContext.currentTime);
-                osc2.frequency.setValueAtTime(600, audioContext.currentTime + 0.1);
-
-                gain2.gain.setValueAtTime(0.3, audioContext.currentTime);
-                gain2.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
-
-                osc2.start(audioContext.currentTime);
-                osc2.stop(audioContext.currentTime + 0.5);
-            }, 200);
-        }
-
         function updateDisplay() {
             const minutes = Math.floor(remainingTime / 60);
             const seconds = remainingTime % 60;
@@ -465,7 +1311,7 @@
         }
 
         function startTimer() {
-            initAudio(); // Initialize audio on user interaction
+            initAudio();
 
             if (!isRunning) {
                 const minutes = parseInt(minutesInput.value) || 0;
@@ -485,7 +1331,7 @@
                         remainingTime--;
                         updateDisplay();
                     } else {
-                        playBellSound();
+                        playTimerSound();
 
                         if (loopToggle.checked) {
                             const minutes = parseInt(minutesInput.value) || 0;
@@ -518,7 +1364,6 @@
         startBtn.addEventListener('click', startTimer);
         stopBtn.addEventListener('click', stopTimer);
 
-        // Update display when inputs change
         minutesInput.addEventListener('input', () => {
             if (!isRunning) {
                 const minutes = parseInt(minutesInput.value) || 0;
@@ -554,7 +1399,8 @@
 
         randomIdleAnimation();
 
-        // Initialize display
+        // Initialize
+        initSettings();
         updateDisplay();
     </script>
 </body>
